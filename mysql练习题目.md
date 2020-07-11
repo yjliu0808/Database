@@ -90,3 +90,11 @@ SELECT  s_id,avg(s_score) as sc_v from Score GROUP BY s_id
 ) sc  on sc.s_id=st.s_id  and sc_v<60;    
 ```
 
+-- 5、查询所有同学的学生编号、学生姓名、选课总数、所有课程的总成绩
+
+```mysql
+select Student.s_id,Student.s_name, sc.cn, sc.m from Student join (
+select s_id,count(c_id) as cn ,sum(s_score) as m from Score GROUP BY s_id 
+)sc on Student.s_id=sc.s_id  ORDER BY  sc.m desc ;
+```
+
