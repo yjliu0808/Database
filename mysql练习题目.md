@@ -5,6 +5,12 @@
 > 用户名:root 密码:rootroot
 >
 > use MyDatabase
+>
+> -- 查看SQL_MODE
+> SELECT @@sql_mode;
+>
+> -- 修改SQL_MODE
+> SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
 
 #### 二、MySQL经典练习题及答案
 
@@ -97,4 +103,59 @@ select Student.s_id,Student.s_name, sc.cn, sc.m from Student join (
 select s_id,count(c_id) as cn ,sum(s_score) as m from Score GROUP BY s_id 
 )sc on Student.s_id=sc.s_id  ORDER BY  sc.m desc ;
 ```
+
+-- 6、查询"李"姓老师的数量 
+
+```mysql
+select count(t_name) from Teacher where t_name like '王%' ;
+```
+
+-- 7、查询学过"张三"老师授课的同学的信息 
+
+- 分析：Teacher       t_id 
+                Course        t_id      c_id 
+                Score           c_id     s_id 
+                Student      s_id
+
+第一步：课程表和老师表关联查询姓名为张三老师对应的课程编号c_id （共有字段t_id）
+
+```mysql
+select t.tid as tid ,t.tname tname ,c.c_id cid,c.c_name cname  from  Course c  JOIN 
+(select t_id tid,t_name tname from  Teacher where t_name='张三') t  on t.tid=c.t_id;
+```
+
+
+
+第二步：成绩表和第一步中的结果表关联,查询姓名为张三老师的课程编号c_id,对应的成绩表的学生的s_id
+
+```mysql
+select c2.tid c2tid ,c2.tname c2tname , c2.cid  c2id,c2.cname c2cname,  sc.s_id scsid, sc.s_score scscore from Score as  sc join
+ (select t.tid  tid ,t.tname tname ,c.c_id cid,c.c_name cname  from  Course c  JOIN  (select t_id tid,t_name tname from  Teacher where t_name='张三') t  on t.tid=c.t_id ) 
+c2
+ on sc.c_id=c2.cid;
+```
+
+第三步：学生表和上一步的结果表关联查询学生信息
+
+```mysql
+SELECT st.s_name,st.s_birth,st.s_sex ,w.c2tid ,w.c2tname , w.c2id,w.c2cname,  w.scsid, w.scscore FROM  Student st join
+ (select c2.tid c2tid ,c2.tname c2tname , c2.cid  c2id,c2.cname c2cname,  sc.s_id scsid, sc.s_score scscore from Score as  sc join
+ (select t.tid  tid ,t.tname tname ,c.c_id cid,c.c_name cname  from  Course c  JOIN  (select t_id tid,t_name tname from  Teacher where t_name='张三') t  on t.tid=c.t_id ) c2 on sc.c_id=c2.cid)
+ w on w.scsid=st.s_id;
+```
+
+-- 8、查询没学过"张三"老师授课的同学的信息 
+
+-- 9、查询学过编号为"01"并且也学过编号为"02"的课程的同学的信息
+
+```mysql
+select * from  Student st ,Score sc1,Score sc2
+                 where st.s_id=sc1.s_id  and st.s_id=sc2.s_id  and sc1.c_id='01' and sc2.c_id ='02';
+```
+
+
+
+
+
+
 
