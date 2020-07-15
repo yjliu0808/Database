@@ -11,6 +11,8 @@
 >
 > -- 修改SQL_MODE
 > SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+>
+> 
 
 #### 二、MySQL经典练习题及答案
 
@@ -145,6 +147,8 @@ SELECT st.s_name,st.s_birth,st.s_sex ,w.c2tid ,w.c2tname , w.c2id,w.c2cname,  w.
 ```
 
 -- 8、查询没学过"张三"老师授课的同学的信息 
+
+待：
 
 -- 9、查询学过编号为"01"并且也学过编号为"02"的课程的同学的信息
 
